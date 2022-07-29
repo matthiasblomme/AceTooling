@@ -6,7 +6,7 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.stream.Stream;
 
-public class policiesListFile {
+public class PoliciesList {
     /*
     The list that contains the policies to search for
      */
@@ -20,6 +20,13 @@ public class policiesListFile {
         }
         return csList;
         //csList.stream().sorted().forEach(System.out::println);
+    }
+
+    static HashSet<String> readCs(){
+        //find all policies on the filesystem dynamically
+
+        //look for folders with the file policy.descriptor
+        return csList;
     }
 
 }

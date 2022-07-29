@@ -6,13 +6,13 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class handleProperties {
+public class HandleProperties {
 
-    static String instegrationServerPatter = "IS=(.*)\s";
+    static String instegrationServerPatter = "IS=\\(.*\\)\\s";
     static String applicationPattern = "Application";
-    static String msgflowPattern = "\s+MessageFlow";
+    static String msgflowPattern = "\\s+MessageFlow";
     static String msgflowPattern2 = "^MessageFlow";
-    static String labelPattern = "\s+label='(.*?)'";
+    static String labelPattern = "\\s+label='\\(.*?\\)'";
 
     public static void readPropertiesFile(String propFileName, String searchPattern) {
         try(BufferedReader br = new BufferedReader(new FileReader(propFileName))) {

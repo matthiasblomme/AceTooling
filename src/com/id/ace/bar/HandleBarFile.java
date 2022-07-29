@@ -6,11 +6,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class handleBarFile {
+public class HandleBarFile {
 
     static Pattern p = Pattern.compile("\\s+(.*)\\s*=\\s*(.*)");
 

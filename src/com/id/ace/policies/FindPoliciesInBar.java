@@ -1,7 +1,7 @@
 package com.id.ace.policies;
 
-import com.id.ace.bar.handleBarFile;
-import com.id.ace.utils.fileUtils;
+import com.id.ace.bar.HandleBarFile;
+import com.id.ace.utils.FileUtils;
 
 import java.nio.file.Path;
 import java.util.HashSet;
@@ -16,7 +16,7 @@ It will search all bar files in a folder (recursively) and will compare each pro
 to a list of policy names that are provided via an input file.
 It will print all found hits to the console window
  */
-public class findPoliciesInBar {
+public class FindPoliciesInBar {
 
     /*
     The list that contains the policies to search for
@@ -39,14 +39,14 @@ public class findPoliciesInBar {
     Main entry class to run the code
      */
     public static void main(String[] args) {
-        List<Path> hitList = fileUtils.find(searchDir, ".bar");
-        csList = policiesListFile.readCsFile(csFileName);
+        List<Path> hitList = FileUtils.find(searchDir, ".bar");
+        csList = PoliciesList.readCsFile(csFileName);
         csPattern = String.join("|", csList);
         Pattern p = Pattern.compile(csPattern);
         hitList.stream().sorted().forEach(k -> {
             //System.out.println(k);
             try {
-                Map<String, String> barContents = handleBarFile.readBar(k.toString());
+                Map<String, String> barContents = HandleBarFile.readBar(k.toString());
                 for (String key : barContents.keySet()) {
                     Matcher m = p.matcher(barContents.get(key));
                     if (m.matches()) {

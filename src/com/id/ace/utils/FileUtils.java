@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class fileUtils {
+public class FileUtils {
 
     public static List<Path> find(String searchDirectory, String query){
         try (Stream<Path> files = Files.walk(Paths.get(searchDirectory))) {

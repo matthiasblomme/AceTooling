@@ -1,0 +1,95 @@
+<Definition>
+    <MessageFlow uuid="4d5e898d-c3b1-414f-8605-df210c7525b6" userTraceLevel="none" traceLevel="none"
+                 userTraceFilter="none" traceFilter="none" label="APIGFSFusionGetNotifications" additionalInstances="0"
+                 commitCount="1" commitInterval="0" coordinatedTransaction="no"
+                 deployInfo="PGRlcGxveUluZm8gdmVyc2lvbj0iMSI+PGJhciBiYXJmaWxlbmFtZT0iQzovVXNlcnMvQURNLUZWUlNTX0svSUJNL0lJQlQxMC93b3Jrc3BhY2VfRnVzaW9uL0FQSUdGU0Z1c2lvbk5vdGlmaWNhdGlvbnMvQVBJR0ZTRnVzaW9uR2V0Tm90aWZpY2F0aW9ucy1URVNULmJhciIgdGltZT0iMjAyMS0wNS0xMiAxNzoyNzoxMi4wMDAgKzAyMDAiLz48ZGVwbG95IHRpbWU9IjIwMjItMDEtMjQgMTM6NTA6MTguNTkzICswMTAwIiB1c2VySWQ9ImlpYkFkbWlucyIvPjxicm9rZXIgdGltZT0iMjAyMi0wMS0yNCAxMzo1MDoxOC41OTMgKzAxMDAiIHVzZXJJZD0iaWliQWRtaW5zIi8+PGtleXdvcmRzLz48L2RlcGxveUluZm8+"
+                 activeUserExitList="" inactiveUserExitList="">
+        <SubFlowNode uuid="APIGFSFusionGetNotifications#FCMComposite_1_1" userTraceLevel="none" traceLevel="none"
+                     userTraceFilter="none" traceFilter="none" label="FromApipro"
+                     subflowImplFile="ApiProLibrary.FromApipro.subflow" queueName="APIPRO.GFSFUSION.NOTIFICATION.IN">
+            <InputTerminal uuid="Input"/>
+            <OutputTerminal uuid="Output"/>
+            <Attribute uuid="Log_ElasticPrefix" type="CHARACTER">apipro-getNotifications</Attribute>
+            <Attribute uuid="Log_EventLogPrefix" type="CHARACTER"/>
+            <Attribute uuid="Log_FilePrefix" type="CHARACTER"/>
+            <Attribute uuid="Log_ToElastic" type="BOOLEAN">TRUE</Attribute>
+            <Attribute uuid="Log_ToEventLog" type="BOOLEAN">FALSE</Attribute>
+            <Attribute uuid="Log_ToFile" type="BOOLEAN">FALSE</Attribute>
+        </SubFlowNode>
+        <ComIbmComputeNode uuid="APIGFSFusionGetNotifications#FCMComposite_1_2" userTraceLevel="none" traceLevel="none"
+                           userTraceFilter="none" traceFilter="none" label="Process" dataSource=""
+                           transaction="automatic" treatWarningsAsErrors="no" throwExceptionOnDatabaseError="yes"
+                           initialStackSize="256"
+                           computeExpression="esql://routine/#APIGFSFusionGetNotifications_Process.Main"
+                           computeMode="destinationAndMessage" validate="no" freeResources="no">
+            <Attribute uuid="ApiproNotifications_ArchiveDirectory" type="CHARACTER">
+                \\fswpg-active\testb2bshare\Inhouse\APIPRO\Notifications
+            </Attribute>
+            <Attribute uuid="ApiproNotifications_SubjectPrefix" type="CHARACTER">TEST</Attribute>
+            <Attribute uuid="B2B_APEX_ENVIRONMENT" type="CHARACTER">U</Attribute>
+            <Attribute uuid="Log_ElasticPrefix" type="CHARACTER">apipro-getNotifications</Attribute>
+            <Attribute uuid="Log_EventLogPrefix" type="CHARACTER"/>
+            <Attribute uuid="Log_FilePrefix" type="CHARACTER"/>
+            <Attribute uuid="Log_ToElastic" type="BOOLEAN">TRUE</Attribute>
+            <Attribute uuid="Log_ToEventLog" type="BOOLEAN">FALSE</Attribute>
+            <Attribute uuid="Log_ToFile" type="BOOLEAN">FALSE</Attribute>
+        </ComIbmComputeNode>
+        <ComIbmFileOutputNode uuid="APIGFSFusionGetNotifications#FCMComposite_1_3" userTraceLevel="none"
+                              traceLevel="none" userTraceFilter="none" traceFilter="none" label="Archive"
+                              messageDomainProperty="" messageSetProperty="" messageTypeProperty=""
+                              messageFormatProperty="" messageEncodingProperty="0" messageCodedCharSetIdProperty="0"
+                              topicProperty="" customDelimiter="" delimiterType="postfix" recordDefinition="wholeFile"
+                              recordDelimiter="eitherLineend" recordLength="80" recordPadding="20" fileFtp="false"
+                              fileFtpRetainAfterPut="false" fileFtpDirectory="" fileFtpServer=""
+                              fileFtpTransferMode="BINARY" fileFtpUser="" remoteTransferType="FTP" outputDirectory=""
+                              outputFilename="" replaceDuplicateArchives="false"
+                              requestDirectoryLocation="$LocalEnvironment/Destination/File/Directory"
+                              requestNameLocation="$LocalEnvironment/Destination/File/Name" outputMode="createOrReplace"
+                              messageLocation="$Body">
+            <InputTerminal uuid="EOD"/>
+            <OutputTerminal uuid="EOD"/>
+        </ComIbmFileOutputNode>
+        <ComIbmEmailOutputNode uuid="APIGFSFusionGetNotifications#FCMComposite_1_4" userTraceLevel="none"
+                               traceLevel="none" userTraceFilter="none" traceFilter="none" label="Email Output"
+                               messageDomainProperty="" messageSetProperty="" messageTypeProperty=""
+                               messageFormatProperty="" messageEncodingProperty="0" messageCodedCharSetIdProperty="0"
+                               topicProperty="" attachmentContent="" attachmentContentEncoding=""
+                               attachmentContentName="" attachmentContentType="" bccAddresses="" bodyContentType=""
+                               ccAddresses="" fromAddress="mwsupport@globalpsa.com" messageText=""
+                               multipartContentType="" replyToAddress="" securityIdentity="" smtpServer="localhost"
+                               subject="" toAddresses=""/>
+        <ComIbmLabelNode uuid="APIGFSFusionGetNotifications#FCMComposite_1_5" userTraceLevel="none" traceLevel="none"
+                         userTraceFilter="none" traceFilter="none" label="B2B" labelName="B2B"/>
+        <ComIbmLabelNode uuid="APIGFSFusionGetNotifications#FCMComposite_1_6" userTraceLevel="none" traceLevel="none"
+                         userTraceFilter="none" traceFilter="none" label="LOG" labelName="LOG"/>
+        <SubFlowNode uuid="APIGFSFusionGetNotifications#FCMComposite_1_7" userTraceLevel="none" traceLevel="none"
+                     userTraceFilter="none" traceFilter="none" label="Log" subflowImplFile="LoggingLibrary.Log.subflow">
+            <InputTerminal uuid="Input"/>
+            <OutputTerminal uuid="Output"/>
+            <Attribute uuid="Log_ElasticPrefix" type="CHARACTER">apipro-getNotifications</Attribute>
+            <Attribute uuid="Log_EventLogPrefix" type="CHARACTER"/>
+            <Attribute uuid="Log_FilePrefix" type="CHARACTER"/>
+            <Attribute uuid="Log_ToElastic" type="BOOLEAN">TRUE</Attribute>
+            <Attribute uuid="Log_ToEventLog" type="BOOLEAN">FALSE</Attribute>
+            <Attribute uuid="Log_ToFile" type="BOOLEAN">FALSE</Attribute>
+        </SubFlowNode>
+        <SubFlowNode uuid="APIGFSFusionGetNotifications#FCMComposite_1_8" userTraceLevel="none" traceLevel="none"
+                     userTraceFilter="none" traceFilter="none" label="CreateB2BEvent"
+                     subflowImplFile="be.psaa.b2b.event.CreateB2BEvent.subflow">
+            <InputTerminal uuid="Input"/>
+            <OutputTerminal uuid="Output"/>
+            <Attribute uuid="B2B_APEX_ENVIRONMENT" type="CHARACTER">U</Attribute>
+        </SubFlowNode>
+        <Connection sourceNode="APIGFSFusionGetNotifications#FCMComposite_1_1" sourceTerminal="Output"
+                    targetNode="APIGFSFusionGetNotifications#FCMComposite_1_2" targetTerminal="in"/>
+        <Connection sourceNode="APIGFSFusionGetNotifications#FCMComposite_1_2" sourceTerminal="out"
+                    targetNode="APIGFSFusionGetNotifications#FCMComposite_1_4" targetTerminal="in"/>
+        <Connection sourceNode="APIGFSFusionGetNotifications#FCMComposite_1_2" sourceTerminal="out1"
+                    targetNode="APIGFSFusionGetNotifications#FCMComposite_1_3" targetTerminal="in"/>
+        <Connection sourceNode="APIGFSFusionGetNotifications#FCMComposite_1_5" sourceTerminal="out"
+                    targetNode="APIGFSFusionGetNotifications#FCMComposite_1_8" targetTerminal="Input"/>
+        <Connection sourceNode="APIGFSFusionGetNotifications#FCMComposite_1_6" sourceTerminal="out"
+                    targetNode="APIGFSFusionGetNotifications#FCMComposite_1_7" targetTerminal="Input"/>
+    </MessageFlow>
+    <Supplement Status="yes" startMode="Maintained" deployedAsSource="true" testRecordMode="Disabled"/>
+</Definition>

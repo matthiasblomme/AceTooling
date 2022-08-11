@@ -55,13 +55,13 @@ public class AceEnvironment {
 
         //"C:\\IBM\\Nodes\\V12NODE\\components\\" + nodeName + "\\servers";
         nodeBasePath = basePath + "\\" + nodeName + "\\servers";
-        Command command = new Command();
+        Command comm = new Command();
         int exitValue = Command.Exec("mqsilist", commandString);
 
-        ArrayList<String> output = command.getOutput();
+        ArrayList<String> output = comm.getOutput();
 
         if (exitValue > 0) {
-            ArrayList<String> error = command.getError();
+            ArrayList<String> error = comm.getError();
             System.err.println(output);
             System.err.println(error);
             return;

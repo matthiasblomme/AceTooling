@@ -43,6 +43,7 @@ public class FindPoliciesInBar {
         csList = PoliciesList.readCsFile(csFileName);
         csPattern = String.join("|", csList);
         Pattern p = Pattern.compile(csPattern);
+        assert hitList != null;
         hitList.stream().sorted().forEach(k -> {
             //System.out.println(k);
             try {

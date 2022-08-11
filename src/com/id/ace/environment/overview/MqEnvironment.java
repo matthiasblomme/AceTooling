@@ -11,34 +11,51 @@ import java.util.regex.Pattern;
 
 public class MqEnvironment {
 
-    String queueNameTypePattern = "DEFINE Q(.*?)\\(\\'(.*?)\\'.*";
-    String queueTargetPattern = ".*TARGET\\(\\'(.*?)\\'.*";
-    String queueDescriptionPattern = ".*DESCR\\(\\'(.*?)\\'.*";
+    String qmgrName;
+    String queueNameTypePattern = "DEFINE Q(.*?)\\('(.*?)'.*";
+    String queueTargetPattern = ".*TARGET\\('(.*?)'.*";
+    String queueDescriptionPattern = ".*DESCR\\('(.*?)'.*";
     String queuePersistencePattern = ".*DEFPSIST\\(\\(.*?\\)\\).*";
-    String queueBackoutQueuePattern = ".*BOQNAME\\(\\'(.*?)\\'.*";
-    String subNameTopicDestPattern = "DEFINE\\sSUB\\(\\'(.*?)\\'\\)\\sTOPICSTR\\(\\'(.*?)\\'\\)\\sDEST\\(\\'(.*?)\\'\\).*";
-    HashMap<String, MQQueue> queueMap= new HashMap<String, MQQueue>();
-    HashMap<String, MQSubscription> subscriptionMap= new HashMap<String, MQSubscription>();
+    String queueBackoutQueuePattern = ".*BOQNAME\\('(.*?)'.*";
+    String subNameTopicDestPattern = "DEFINE\\sSUB\\('(.*?)'\\)\\sTOPICSTR\\('(.*?)'\\)\\sDEST\\('(.*?)'\\).*";
+    HashMap<String, MQQueue> queueMap= new HashMap<>();
+    HashMap<String, MQSubscription> subscriptionMap= new HashMap<>();
+
+    public void buildenvironmentView(String qmgrName) {
+        this.qmgrName =qmgrName;
+        getQueueList();
+        getSubscriptionList();;
+    }
 
     public void getQueueList(){
-        String[] commandString = {"-m", "V12QMGR", "-t", "queue", "-o", "1line", "-x", "object"};
+        String[] commandString = {"-m", qmgrName, "-t", "queue", "-o", "1line", "-x", "object"};
         Command command = new Command();
         int exitVal = command.Exec("dmpmqcfg", commandString);
 
         ArrayList<String> output = command.getOutput();
-        //ArrayList<String> error = command.getError();
+        if (exitVal > 0) {
+            ArrayList<String> error = command.getError();
+            System.err.println(output);
+            System.err.println(error);
+            return;
+        }
 
         for(String line : output) parseQueueInfo(line);
 
     }
 
     public void getSubscriptionList(){
-        String[] commandString = {"-m", "V12QMGR", "-t", "all", "-o", "1line", "-x", "sub"};
+        String[] commandString = {"-m", qmgrName, "-t", "all", "-o", "1line", "-x", "sub"};
         Command command = new Command();
         int exitVal = command.Exec("dmpmqcfg", commandString);
 
         ArrayList<String> output = command.getOutput();
-        //ArrayList<String> error = command.getError();
+        if (exitVal > 0) {
+            ArrayList<String> error = command.getError();
+            System.err.println(output);
+            System.err.println(error);
+            return;
+        }
 
         for(String line : output) parseSubscriptionInfo(line);
     }
@@ -48,15 +65,12 @@ public class MqEnvironment {
         if (queueInfo.startsWith("*")) return;
         Pattern p = Pattern.compile(queueNameTypePattern);
         Matcher m =  p.matcher(queueInfo);
-        MQQueue tempQueue = new MQQueue();
+        MQQueue tempQueue = null;
         if(m.matches()) {
             MQQueue.QueueType queueTypeEnum = MQQueue.QueueType.valueOf(m.group(1));
+            tempQueue = new MQQueue();
             tempQueue.setType(queueTypeEnum);
             tempQueue.setName(m.group(2));
-
-            //DEFINE QALIAS('ALIASQUEUE') TARGET('VERLONING.DATA.XML.IN') REPLACE
-            //DEFINE QLOCAL('ZEXAMPLE') BOQNAME('SYSTEM.DEAD.LETTER.QUEUE') DESCR('example queue') DISTL(NO) MAXDEPTH(5000) REPLACE
-            //DEFINE QREMOTE('SYSTEM.DEFAULT.REMOTE.QUEUE') XMITQ(' ') REPLACE
 
             switch (queueTypeEnum) {
                 case LOCAL:

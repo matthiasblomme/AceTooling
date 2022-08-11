@@ -6,6 +6,7 @@ import com.id.ace.models.AceLibrary;
 import com.id.ace.models.AceMessageflow;
 import com.id.ace.utils.Command;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,24 +21,56 @@ import java.util.stream.Stream;
 
 public class AceEnvironment {
 
-    String flowPattern = "..*Message\\s+flow\\s+\\'(.*?)\\'.*?\\'(.*?)\\'.*?is\\s(\\w*).*?\\'(.*?)\\'.*?\\'(.*?)\\'.*";
+    String flowPattern = ".*Message\\s+flow\\s+'(.*?)'.*?'(.*?)'.*?is\\s(\\w*).*?'(.*?)'.*?'(.*?)'.*";
 
-    HashMap <String, AceIntegrationServer> integrationServers = new HashMap<String, AceIntegrationServer>();
+    String nodeBasePath;
+    HashMap <String, AceIntegrationServer> integrationServers = new HashMap<>();
     HashMap <String, AceLibrary> libraries = new HashMap<>();
     HashMap <String, AceApplication> applications = new HashMap<>();
     HashMap <String, AceMessageflow> messageFlows = new HashMap<>();
 
-    public void buildenvironmentView(String nodeName){
+    String inputHttpPattern = ".*ComIbmWSInput.*URLSpecifier=\"(.*?)\".*"; //flows and restapi
+    String inputDbPattern = ".*ComIbmDatabaseInput.*dataSource=\"(.*?)\".*databaseInputExpression=\"(.*?)\".*";
+    String inputQueuePattern = ".*ComIbmMQInput.*queueName=\"(.*?)\".*";
+    String inputFilePattern = ".*ComIbmFileInput.*inputDirectory=\"(.*?)\".*";
+    String inputFtpPattern = ".*ComIbmFileInput.*inputDirectory=\"(.*?)\".*fileFtp=\"(.*?)\".*remoteTransferType=\"(.*?)\".*fileFtpServer=\"(.*?)\".*fileFtpDirectory=\"(.*?)\".*";
+    String inputSoapPattern = ".*ComIbmSOAPInput.*wsdlFileName=\"(.*?)\".*.*urlSelector=\"(.*?)\".*";
+
+    String computePattern = ".*ComIbmCompute.*dataSource=\"(.*?)\".*.*computeExpression=\"(.*?)\".*";
+
+    String outputHttpPattern = ".*ComIbmWSRequest.*URLSpecifier=\"(.*?)\".*";
+    String outputAsyncHttpPattern = ".*ComIbmHTTPAsyncRequest.*URLSpecifier=\"(.*?)\".*";
+    String outputQueuePattern = ".*ComIbmMQOutput.*queueName=\"(.*?)\".*";
+    String outputFilePattern = ".*ComIbmFileOutput.*outputDirectory=\"(.*?)\".*";
+    String outputSoapPattern = ".*ComIbmSOAPRequest.*wsdlFileName=\"(.*?)\".*webServiceURL=\"(.*?)\".*";
+    String outputSoapAsyncPattern = ".*ComIbmSOAPAsyncRequest.*wsdlFileName=\"(.*?)\".*webServiceURL=\"(.*?)\".*";
+    String outputRestPattern = ".*ComIbmRESTRequest.*definitionFile=\"(.*?)\".*operationName=\"(.*?)\".*";
+    String outputRestAsyncPattern = ".*ComIbmRESTAsyncRequest.*definitionFile=\"(.*?)\".*operationName=\"(.*?)\".*";
+    String javaComputePattern = ".*ComIbmJavaCompute.*javaClass=\"(.*?)\".*";
+    String mappingNodePattern = ".*ComIbmMSLMapping.*mappingExpression=\"(.*?)\".*";
+    String udpPattern = "";
+
+    public void buildenvironmentView(String nodeName, String basePath){
         String[] commandString = {nodeName, "-r"};
 
-        String nodeBasePath = "C:\\IBM\\Nodes\\V12NODE\\components\\" + nodeName + "\\servers";
+        //"C:\\IBM\\Nodes\\V12NODE\\components\\" + nodeName + "\\servers";
+        nodeBasePath = basePath + "\\" + nodeName + "\\servers";
         Command command = new Command();
         int exitValue = Command.Exec("mqsilist", commandString);
 
         ArrayList<String> output = command.getOutput();
+
+        if (exitValue > 0) {
+            ArrayList<String> error = command.getError();
+            System.err.println(output);
+            System.err.println(error);
+            return;
+        }
         for(String line: output) parseFlowInfo(line);
 
         getAllMessagFlowFiles(nodeBasePath);
+
+        System.out.println("handled all message flows");
     }
 
     private void getAllMessagFlowFiles(String baseDir){
@@ -51,28 +84,147 @@ public class AceEnvironment {
         }
 
         for(String file : fileList){
-            if file.endsWith(".msgflow") {
-
-            } else if(file.endsWith(".msgflow.dfmxml")) {
-
+            if (file.endsWith(".msgflow")) {
+                readMessageFlow(file);
+            } else if(file.endsWith(".msgflow.dfmxml")) { //migrated flow
+                //skip for now
+                //identical to msgflow
             } else if(file.endsWith(".esql")) {
-
-            } else if (file.endsWith(""))
+                //skip for now
+                //check for destination properties
+                //map with msgflow
+            } else if (file.endsWith(".subflow")) {
+                //skip for now
+                //identical to msgflow
+            } else if (file.endsWith(".subflow.dfmxml")) { //migrated subflow
+                //skip for now
+                //identical to msgflow
+            } else if (file.endsWith("broker.xml")) {
+                //parse property overrides
+                //file: IS\run\APP\META-INF\broker.xml
+                //<ConfigurableProperty uri="udp#udp1" override="hahahaha">
+                // uri = flow # property
+                //<ConfigurableProperty uri="udp#HTTP Input.URLSpecifier" override="/tes">
+                // uri = flow # node . property
+            }
         }
-
     }
 
     public List listFilesUsingFilesList(String dir) throws IOException {
         try (Stream<Path> stream = Files.walk(Paths.get(dir), Integer.MAX_VALUE)) {
             return stream
-                    .filter(file -> !Files.isDirectory((Path) file))
+                    .filter(file -> !Files.isDirectory(file))
                     .map(Path::toAbsolutePath)
                     .map(Path::toString)
                     .collect(Collectors.toList());
         }
     }
 
-    private void readFlowDetails(){
+    public void readMessageFlow(String file){
+        AceMessageflow flow;
+        Pattern flowDirNamePattern = Pattern.compile(nodeBasePath.replace("\\","\\\\") + "\\\\(.*?)\\\\run\\\\(.*?)\\\\(.*)");
+        Matcher m = flowDirNamePattern.matcher(file);
+        if(m.matches()) {
+            flow = getOrCreateMessageFlow(m.group(3),m.group(2), m.group(1));
+        } else {
+            System.err.println("Can't parse file path for: " + file);
+            return;
+        }
+
+        try(BufferedReader br = Files.newBufferedReader(Paths.get(file))) {
+            String line;
+            while((line = br.readLine()) != null){
+                m = Pattern.compile(inputHttpPattern).matcher(line);
+                if (m.matches()) flow.addInputUrlPath(m.group(1));
+
+                m = Pattern.compile(inputDbPattern).matcher(line);
+                if (m.matches()) flow.addDatabaseConnection(m.group(1), m.group(2));
+
+                m = Pattern.compile(inputQueuePattern).matcher(line);
+                if (m.matches())   flow.addInputQueue(m.group(1));
+
+                m = Pattern.compile(inputFilePattern).matcher(line);
+                if (m.matches()) flow.addInputDirectory(m.group(1));
+
+                //TODO: expand to all ftp properties
+                m = Pattern.compile(inputFtpPattern).matcher(line);
+                if (m.matches()) {
+                    if (m.group(2).equals("true"))
+                        flow.addFtpInput(m.group(5));
+                }
+
+                m = Pattern.compile(inputSoapPattern).matcher(line);
+                if (m.matches()) flow.addInputSoap(m.group(2), m.group(1));
+
+                m = Pattern.compile(computePattern).matcher(line);
+                if (m.matches()) {
+                    flow.addEsqlModule(m.group(2));
+                    if (!m.group(1).equals("")) flow.addDatabaseConnection(m.group(1), m.group(2));
+                };
+
+                m = Pattern.compile(outputHttpPattern).matcher(line);
+                if (m.matches()) flow.addOutputUrlPath(m.group(1));
+
+                m = Pattern.compile(outputAsyncHttpPattern).matcher(line);
+                if (m.matches()) flow.addOutputUrlPath(m.group(1));
+
+                m = Pattern.compile(outputQueuePattern).matcher(line);
+                if (m.matches()) flow.addOutputQueue(m.group(1));
+
+                m = Pattern.compile(outputFilePattern).matcher(line);
+                if (m.matches()) flow.addOutputDirectory(m.group(1));
+
+                m = Pattern.compile(outputSoapPattern).matcher(line);
+                if (m.matches()) flow.addOutputSoap(m.group(2), m.group(1));
+
+                m = Pattern.compile(outputSoapAsyncPattern).matcher(line);
+                if (m.matches()) flow.addOutputSoap(m.group(2), m.group(1));
+
+                m = Pattern.compile(outputRestPattern).matcher(line);
+                if (m.matches()) flow.addOutputRest(m.group(2), m.group(1));
+
+                m = Pattern.compile(outputRestAsyncPattern).matcher(line);
+                if (m.matches()) flow.addOutputRest(m.group(2), m.group(1));
+
+                m = Pattern.compile(javaComputePattern).matcher(line);
+                if (m.matches()) flow.addJavaModules(m.group(1));
+
+                m = Pattern.compile(mappingNodePattern).matcher(line);
+                if (m.matches()) flow.addMappingModules(m.group(1));
+
+                //TODO: handle all properties
+                m = Pattern.compile(".*fileFtpDirectory=\"(.*?)\".*").matcher(line);
+                if (m.matches()) flow.addFtpInput(m.group(1));
+
+            }
+        } catch (IOException e) {
+            System.err.println("Something went wrong trying to read: " + file);
+            System.err.println(e.getMessage());
+        }
+    }
+
+    private AceMessageflow getOrCreateMessageFlow(String name, String appName, String isName) {
+        Matcher m = Pattern.compile("([\\w+.\\\\]*?)(\\w+\\.\\w+)").matcher(name);
+        String shortName = name;
+        if (m.matches()) shortName = m.group(2).replace(".msgflow", "");
+
+        if (this.messageFlows.containsKey(shortName)) {
+            return this.messageFlows.get(shortName);
+        }
+        else{
+            return new AceMessageflow(name.replace("\\","."), isName, appName, "unknown");
+        }
+    }
+
+    private void readSubFlow(String file){
+
+    }
+
+    private void readMigratedMessageFlow(String file){
+
+    }
+
+    private void readMigratedSubflow(String file){
 
     }
 

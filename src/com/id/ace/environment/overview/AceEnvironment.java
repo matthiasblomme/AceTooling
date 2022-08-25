@@ -29,25 +29,25 @@ public class AceEnvironment {
     HashMap <String, AceApplication> applications = new HashMap<>();
     HashMap <String, AceMessageflow> messageFlows = new HashMap<>();
 
-    String inputHttpPattern = ".*ComIbmWSInput.*URLSpecifier=\"(.*?)\".*"; //flows and restapi
-    String inputDbPattern = ".*ComIbmDatabaseInput.*dataSource=\"(.*?)\".*databaseInputExpression=\"(.*?)\".*";
-    String inputQueuePattern = ".*ComIbmMQInput.*queueName=\"(.*?)\".*";
-    String inputFilePattern = ".*ComIbmFileInput.*inputDirectory=\"(.*?)\".*";
-    String inputFtpPattern = ".*ComIbmFileInput.*inputDirectory=\"(.*?)\".*fileFtp=\"(.*?)\".*remoteTransferType=\"(.*?)\".*fileFtpServer=\"(.*?)\".*fileFtpDirectory=\"(.*?)\".*";
-    String inputSoapPattern = ".*ComIbmSOAPInput.*wsdlFileName=\"(.*?)\".*.*urlSelector=\"(.*?)\".*";
+    String inputHttpPattern = ".*ComIbmWSInput.*?URLSpecifier=\"(.*?)\".*"; //flows and restapi
+    String inputDbPattern = ".*ComIbmDatabaseInput.*?dataSource=\"(.*?)\".*?databaseInputExpression=\"(.*?)\".*";
+    String inputQueuePattern = ".*ComIbmMQ(?:Input|Get).*?queueName=\"(.*?)\".*";
+    String inputFilePattern = ".*ComIbmFileInput.*?inputDirectory=\"(.*?)\".*";
+    String inputFtpPattern = ".*ComIbmFileInput.*?inputDirectory=\"(.*?)\".*?fileFtp=\"(.*?)\".*?remoteTransferType=\"(.*?)\".*fileFtpServer=\"(.*?)\".*fileFtpDirectory=\"(.*?)\".*";
+    String inputSoapPattern = ".*ComIbmSOAPInput.*?wsdlFileName=\"(.*?)\".*?urlSelector=\"(.*?)\".*";
 
-    String computePattern = ".*ComIbmCompute.*dataSource=\"(.*?)\".*.*computeExpression=\"(.*?)\".*";
+    String computePattern = ".*ComIbmCompute.*?dataSource=\"(.*?)\".*?computeExpression=\"(.*?)\".*";
 
-    String outputHttpPattern = ".*ComIbmWSRequest.*URLSpecifier=\"(.*?)\".*";
-    String outputAsyncHttpPattern = ".*ComIbmHTTPAsyncRequest.*URLSpecifier=\"(.*?)\".*";
-    String outputQueuePattern = ".*ComIbmMQOutput.*queueName=\"(.*?)\".*";
-    String outputFilePattern = ".*ComIbmFileOutput.*outputDirectory=\"(.*?)\".*";
-    String outputSoapPattern = ".*ComIbmSOAPRequest.*wsdlFileName=\"(.*?)\".*webServiceURL=\"(.*?)\".*";
-    String outputSoapAsyncPattern = ".*ComIbmSOAPAsyncRequest.*wsdlFileName=\"(.*?)\".*webServiceURL=\"(.*?)\".*";
-    String outputRestPattern = ".*ComIbmRESTRequest.*definitionFile=\"(.*?)\".*operationName=\"(.*?)\".*";
-    String outputRestAsyncPattern = ".*ComIbmRESTAsyncRequest.*definitionFile=\"(.*?)\".*operationName=\"(.*?)\".*";
-    String javaComputePattern = ".*ComIbmJavaCompute.*javaClass=\"(.*?)\".*";
-    String mappingNodePattern = ".*ComIbmMSLMapping.*mappingExpression=\"(.*?)\".*";
+    String outputHttpPattern = ".*ComIbmWSRequest.*?URLSpecifier=\"(.*?)\".*";
+    String outputAsyncHttpPattern = ".*ComIbmHTTPAsyncRequest.*?URLSpecifier=\"(.*?)\".*";
+    String outputQueuePattern = ".*ComIbmMQOutput.*?queueName=\"(.*?)\".*";
+    String outputFilePattern = ".*ComIbmFileOutput.*?outputDirectory=\"(.*?)\".*";
+    String outputSoapPattern = ".*ComIbmSOAPRequest.*?wsdlFileName=\"(.*?)\".*?webServiceURL=\"(.*?)\".*";
+    String outputSoapAsyncPattern = ".*ComIbmSOAPAsyncRequest.*?wsdlFileName=\"(.*?)\".*?webServiceURL=\"(.*?)\".*";
+    String outputRestPattern = ".*ComIbmRESTRequest.*?definitionFile=\"(.*?)\".*?operationName=\"(.*?)\".*";
+    String outputRestAsyncPattern = ".*ComIbmRESTAsyncRequest.*?definitionFile=\"(.*?)\".*?operationName=\"(.*?)\".*";
+    String javaComputePattern = ".*ComIbmJavaCompute.*?javaClass=\"(.*?)\".*";
+    String mappingNodePattern = ".*ComIbmMSLMapping.*?mappingExpression=\"(.*?)\".*";
     String udpPattern = "";
 
     public void buildenvironmentView(String nodeName, String basePath){
@@ -66,6 +66,8 @@ public class AceEnvironment {
             System.err.println(error);
             return;
         }
+        readMessageFlow("C:\\Users\\blmm_m\\IBM\\ACET11\\workspace\\AceTooling\\data\\APIGFSFusionGetNotifications.msgflow.dfmxml");
+
         for(String line: output) parseFlowInfo(line);
 
         getAllMessagFlowFiles(nodeBasePath);

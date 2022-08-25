@@ -16,7 +16,7 @@ public class GenerateOverview {
         qmgrName = args[2];
 
         MqEnvironment mqEnv = new MqEnvironment();
-        mqEnv.buildenvironmentView(qmgrName);
+        //mqEnv.buildenvironmentView(qmgrName);
 
         //printMQ(mqEnv);
 
@@ -62,6 +62,8 @@ public class GenerateOverview {
                     System.out.println("        "  + flow + " > " + aceApp.getChildren().get(flow).getState());
                     System.out.println("            inputDir: " + aceApp.getChildren().get(flow).getInputDirectories().toString());
                     System.out.println("            ftpInput: " + aceApp.getChildren().get(flow).getFtpInput().toString());
+                    System.out.println("            inputQueue: " + aceApp.getChildren().get(flow).getInputQueues().toString());
+                    System.out.println("            outputQueue: " + aceApp.getChildren().get(flow).getOutputQueues().toString());
                 }
             }
         }

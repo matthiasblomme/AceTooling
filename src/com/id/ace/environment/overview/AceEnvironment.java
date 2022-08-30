@@ -66,16 +66,16 @@ public class AceEnvironment {
             System.err.println(error);
             return;
         }
-        readMessageFlow("C:\\Users\\blmm_m\\IBM\\ACET11\\workspace\\AceTooling\\data\\APIGFSFusionGetNotifications.msgflow.dfmxml");
+        //readMessageFlow("C:\\Users\\blmm_m\\IBM\\ACET11\\workspace\\AceTooling\\data\\APIGFSFusionGetNotifications.msgflow.dfmxml");
 
         for(String line: output) parseFlowInfo(line);
 
-        getAllMessagFlowFiles(nodeBasePath);
+        readAllRuntimeFiles(nodeBasePath);
 
         System.out.println("handled all message flows");
     }
 
-    private void getAllMessagFlowFiles(String baseDir){
+    private void readAllRuntimeFiles(String baseDir){
         //C:\IBM\Nodes\V12NODE\components\nodeName\servers\IS1\run\BTM_1\com\mbl\btm\httpflow.msgflow
         //D:\IBM\mqsi\Nodes\components\nodeName\servers\APEXAdapter\run
         List<String> fileList = new ArrayList<>();
@@ -89,7 +89,8 @@ public class AceEnvironment {
             if (file.endsWith(".msgflow")) {
                 readMessageFlow(file);
             } else if(file.endsWith(".msgflow.dfmxml")) { //migrated flow
-                //skip for now
+                //TODO: test
+                readMessageFlow(file);
                 //identical to msgflow
             } else if(file.endsWith(".esql")) {
                 //skip for now

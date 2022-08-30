@@ -230,4 +230,8 @@ public class AceMessageflow {
     public void addMappingModules(String mappingModule) {
         this.mappingModules.add(mappingModule);
     }
+
+    public void print(){
+        //TODO: print all properties cleanly
+    }
 }

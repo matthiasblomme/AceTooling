@@ -16,16 +16,16 @@ public class GenerateOverview {
         qmgrName = args[2];
 
         MqEnvironment mqEnv = new MqEnvironment();
-        //mqEnv.buildenvironmentView(qmgrName);
+        mqEnv.buildenvironmentView(qmgrName);
 
         //printMQ(mqEnv);
 
         AceEnvironment aceEnv = new AceEnvironment();
         aceEnv.buildenvironmentView(nodeName, basePath);
 
-        //printFlows(aceEnv);
+        printFlows(aceEnv);
         //aceEnv.readMessageFlow("C:\\IBM\\Nodes\\V12NODE\\components\\V12NODE\\servers\\TEST\\run\\INDEXTEST\\com\\mbl\\test\\indextest2.msgflow");
-        printFlowDirs(aceEnv);
+        //printFlowDirs(aceEnv);
 
     }
     private static void printMQ(MqEnvironment mqEnv){

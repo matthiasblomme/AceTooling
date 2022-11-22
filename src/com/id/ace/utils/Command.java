@@ -37,11 +37,11 @@ public class Command
             ArrayList<String> command = new ArrayList<>();
             command.add(executable);
             command.addAll(Arrays.asList(args));
-
             ProcessBuilder builder = new ProcessBuilder();
             builder.directory(new File(runDirectory));
             builder.command(command);
-
+            System.out.println(runDirectory);
+            System.out.println(command);
             //Process proc = Runtime.getRuntime().exec(executable, args);
             Process proc = builder.start();
             // any error message?

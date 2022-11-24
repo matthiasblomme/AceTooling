@@ -68,12 +68,8 @@ public class AceEnvironment {
             System.err.println(error);
             return;
         }
-        //readMessageFlow("C:\\Users\\blmm_m\\IBM\\ACET11\\workspace\\AceTooling\\data\\APIGFSFusionGetNotifications.msgflow.dfmxml");
-
         for(String line: output) parseFlowInfo(line);
-
-        //readAllRuntimeFiles(nodeBasePath);
-
+        readAllRuntimeFiles(nodeBasePath);
         System.out.println("handled all message flows");
     }
 

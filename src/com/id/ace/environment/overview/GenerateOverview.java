@@ -4,6 +4,9 @@ import com.id.ace.models.AceApplication;
 import com.id.ace.models.AceIntegrationServer;
 import com.id.ace.models.AceMessageflow;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class GenerateOverview {
 
     public static String nodeName;
@@ -23,9 +26,9 @@ public class GenerateOverview {
         AceEnvironment aceEnv = new AceEnvironment();
         aceEnv.buildenvironmentView(nodeName, basePath);
 
-        printFlows(aceEnv);
-        //aceEnv.readMessageFlow("C:\\IBM\\Nodes\\V12NODE\\components\\V12NODE\\servers\\TEST\\run\\INDEXTEST\\com\\mbl\\test\\indextest2.msgflow");
-        //printFlowDirs(aceEnv);
+        //printFlows(aceEnv);
+        aceEnv.readMessageFlow("C:\\ProgramData\\IBM\\MQSI\\components\\PSAAEDIIIBTEST\\servers\\Apipro-GFS\\run\\APIGFSFusionNotifications\\APIGFSFusionGetNotifications.msgflow.dfmxml");
+        printFlowDirs(aceEnv);
 
     }
     private static void printMQ(MqEnvironment mqEnv){
@@ -64,6 +67,12 @@ public class GenerateOverview {
                     System.out.println("            ftpInput: " + aceApp.getChildren().get(flow).getFtpInput().toString());
                     System.out.println("            inputQueue: " + aceApp.getChildren().get(flow).getInputQueues().toString());
                     System.out.println("            outputQueue: " + aceApp.getChildren().get(flow).getOutputQueues().toString());
+
+                    aceApp.getChildren().get(flow).getProperties().keySet().forEach(k -> {
+                        Matcher m = Pattern.compile(".*directory.*").matcher(k.toString().toLowerCase());
+                        if (m.matches()) System.out.println("            dirAttr: " + aceApp.getChildren().get(flow).getProperties().get(k).toString());
+
+                    });
                 }
             }
         }

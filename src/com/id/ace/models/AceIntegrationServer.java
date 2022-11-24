@@ -9,6 +9,7 @@ public class AceIntegrationServer {
 
     public AceIntegrationServer(String name, AceApplication app) {
         this.name = name;
+        this.addChild(app);
     }
 
     public String getName() {

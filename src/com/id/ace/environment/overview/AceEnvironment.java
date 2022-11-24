@@ -5,6 +5,7 @@ import com.id.ace.models.AceIntegrationServer;
 import com.id.ace.models.AceLibrary;
 import com.id.ace.models.AceMessageflow;
 import com.id.ace.utils.Command;
+import com.id.ace.utils.PrintWithProgressBar;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -49,6 +50,7 @@ public class AceEnvironment {
     String javaComputePattern = ".*ComIbmJavaCompute.*?javaClass=\"(.*?)\".*";
     String mappingNodePattern = ".*ComIbmMSLMapping.*?mappingExpression=\"(.*?)\".*";
     String udpPattern = "";
+    String attributePattern = ".*?<Attribute uuid=\"(.*?)\".*?>(.*?)<.*?";
 
     public void buildenvironmentView(String nodeName, String basePath){
         String[] commandString = {nodeName, "-r"};
@@ -70,7 +72,7 @@ public class AceEnvironment {
 
         for(String line: output) parseFlowInfo(line);
 
-        readAllRuntimeFiles(nodeBasePath);
+        //readAllRuntimeFiles(nodeBasePath);
 
         System.out.println("handled all message flows");
     }
@@ -84,8 +86,12 @@ public class AceEnvironment {
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
+        PrintWithProgressBar printer =  new PrintWithProgressBar("Scanning runtime", 100);
+        int totalFiles = fileList.size();
+        int fileNumber = 0;
 
         for(String file : fileList){
+            printer.print(Math.round(fileNumber++ / totalFiles));
             if (file.endsWith(".msgflow")) {
                 readMessageFlow(file);
             } else if(file.endsWith(".msgflow.dfmxml")) { //migrated flow
@@ -199,6 +205,12 @@ public class AceEnvironment {
                 m = Pattern.compile(".*fileFtpDirectory=\"(.*?)\".*").matcher(line);
                 if (m.matches()) flow.addFtpInput(m.group(1));
 
+                //TODO handle pattern, put while for all propess
+                m = Pattern.compile(attributePattern).matcher(line);
+                while(m.find()){
+                    flow.addProperty(m.group(1), m.group(2));
+                }
+
             }
         } catch (IOException e) {
             System.err.println("Something went wrong trying to read: " + file);
@@ -207,16 +219,24 @@ public class AceEnvironment {
     }
 
     private AceMessageflow getOrCreateMessageFlow(String name, String appName, String isName) {
+        //TODO check if iss exissstss
         Matcher m = Pattern.compile("([\\w+.\\\\]*?)(\\w+\\.\\w+)").matcher(name);
         String shortName = name;
         if (m.matches()) shortName = m.group(2).replace(".msgflow", "");
 
-        if (this.messageFlows.containsKey(shortName)) {
-            return this.messageFlows.get(shortName);
+        if (this.messageFlows.containsKey(shortName)) return this.messageFlows.get(shortName);
+
+        AceMessageflow flow = new AceMessageflow(name.replace("\\","."), isName, appName, "unknown");
+        messageFlows.putIfAbsent(flow.getName(), flow);
+
+        if(!integrationServers.containsKey(isName)){
+            AceApplication app = new AceApplication(appName);
+            applications.putIfAbsent(appName, app);
+            AceIntegrationServer is = new AceIntegrationServer(isName, app);
+            integrationServers.putIfAbsent(is.getName(), is);
+            app.addChild(flow);
         }
-        else{
-            return new AceMessageflow(name.replace("\\","."), isName, appName, "unknown");
-        }
+        return flow;
     }
 
     private void readSubFlow(String file){
@@ -241,13 +261,8 @@ public class AceEnvironment {
             String integrationServerName = m.group(2);
             String state = m.group(3);
             String applicationName = m.group(4);
-
-            if (!messageFlows.containsKey(messageFlowName)){
-                flow = new AceMessageflow(messageFlowName, integrationServerName, applicationName, state);
-            } else {
-                flow = messageFlows.get(messageFlowName);
-            }
-            messageFlows.putIfAbsent(flow.getName(), flow);
+            flow = getOrCreateMessageFlow(messageFlowName, applicationName, integrationServerName);
+            flow.setState(state);
             app = checkApplicationExists(applicationName, flow);
             checkIntegrationServerExists(integrationServerName, app);
         }

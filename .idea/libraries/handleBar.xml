@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="handleBar">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/out/artifacts/handleBar/handleBar.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

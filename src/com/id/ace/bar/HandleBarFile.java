@@ -16,8 +16,10 @@ import java.util.regex.Pattern;
 public class HandleBarFile {
 
     static Pattern p = Pattern.compile("\\s+(.*)\\s*=\\s*(.*)");
-    //TODO replace with dynamic server dir from env
-    static String aceServerDir = "C:\\Program Files\\IBM\\ACE\\12.0.6.0\\server\\";
+
+    static String aceServerDir = System.getenv("PROSPECTIVE_MQSI_FILEPATH") + "\\";
+    //static String aceServerDir = "C:\\Program Files\\IBM\\ACE\\12.0.7.0\\server\\";
+
 
     public static void main(String[] args) throws Exception {
         if (args.length < 2 ) {

@@ -58,7 +58,7 @@ public class AceEnvironment {
         //"C:\\IBM\\Nodes\\V12NODE\\components\\" + nodeName + "\\servers";
         nodeBasePath = basePath + "\\" + nodeName + "\\servers";
         Command comm = new Command();
-        int exitValue = Command.Exec("mqsilist", commandString);
+        int exitValue = comm.Exec("mqsilist", commandString);
 
         ArrayList<String> output = comm.getOutput();
 

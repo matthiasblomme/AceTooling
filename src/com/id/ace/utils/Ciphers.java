@@ -1,0 +1,40 @@
+package com.id.ace.utils;
+
+import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeMap;
+import javax.net.ssl.SSLServerSocketFactory;
+
+public class Ciphers
+{
+    public static void main(String[] args)
+            throws Exception
+    {
+        System.out.println("start");
+        SSLServerSocketFactory ssf = (SSLServerSocketFactory)SSLServerSocketFactory.getDefault();
+
+        String[] defaultCiphers = ssf.getDefaultCipherSuites();
+        String[] availableCiphers = ssf.getSupportedCipherSuites();
+
+        TreeMap<String, Boolean> ciphers = new TreeMap<String, Boolean>();
+
+        for(int i=0; i<availableCiphers.length; ++i )
+            ciphers.put(availableCiphers[i], Boolean.FALSE);
+
+        for(int i=0; i<defaultCiphers.length; ++i )
+            ciphers.put(defaultCiphers[i], Boolean.TRUE);
+
+        System.out.println("Default Cipher");
+        for(Iterator i = ciphers.entrySet().iterator(); i.hasNext(); ) {
+            Map.Entry cipher=(Map.Entry)i.next();
+
+            if(Boolean.TRUE.equals(cipher.getValue()))
+                System.out.print('*');
+            else
+                System.out.print(' ');
+
+            System.out.print('\t');
+            System.out.println(cipher.getKey());
+        }
+    }
+}

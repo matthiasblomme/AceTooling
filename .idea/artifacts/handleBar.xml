@@ -1,5 +1,5 @@
 <component name="ArtifactManager">
-  <artifact type="jar" name="handleBar">
+  <artifact type="jar" build-on-make="true" name="handleBar">
     <output-path>$PROJECT_DIR$/out/artifacts/handleBar</output-path>
     <root id="archive" name="handleBar.jar">
       <element id="directory" name="META-INF">

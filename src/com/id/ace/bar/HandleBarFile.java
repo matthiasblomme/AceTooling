@@ -44,7 +44,5 @@ public class HandleBarFile {
         writeProperties((new File(targetBar).getParent())+"\\overwrite.properties",result);
 
         System.out.println();
-        //System.out.println("If you want to apply the properties files:");
-        //System.out.println("mqsiapplybaroverride -b <bar file name> -p <properties file>");
     }
 }

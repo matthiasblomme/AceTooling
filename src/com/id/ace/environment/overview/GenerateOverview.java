@@ -27,8 +27,6 @@ public class GenerateOverview {
         aceEnv.buildenvironmentView(nodeName, basePath);
 
         printFlows(aceEnv);
-        //aceEnv.readMessageFlow("C:\\ProgramData\\IBM\\MQSI\\components\\PSAAEDIIIBTEST\\servers\\Apipro-GFS\\run\\APIGFSFusionNotifications\\APIGFSFusionGetNotifications.msgflow.dfmxml");
-        //printFlowDirs(aceEnv);
 
     }
     private static void printMQ(MqEnvironment mqEnv){

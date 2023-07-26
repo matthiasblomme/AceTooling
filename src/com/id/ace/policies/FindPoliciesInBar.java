@@ -1,6 +1,6 @@
 package com.id.ace.policies;
 
-import com.id.ace.bar.HandleBarFile;
+import com.id.ace.bar.BarUtils;
 import com.id.ace.utils.FileUtils;
 
 import java.nio.file.Path;
@@ -47,7 +47,7 @@ public class FindPoliciesInBar {
         hitList.stream().sorted().forEach(k -> {
             //System.out.println(k);
             try {
-                Map<String, String> barContents = HandleBarFile.readBar(k.toString());
+                Map<String, String> barContents = BarUtils.readBar(k.toString());
                 for (String key : barContents.keySet()) {
                     Matcher m = p.matcher(barContents.get(key));
                     if (m.matches()) {

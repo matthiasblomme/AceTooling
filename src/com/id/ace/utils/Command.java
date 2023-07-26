@@ -98,8 +98,8 @@ public class Command
             Map<String, String> environment = builder.environment();
             builder.directory(new File(runDirectory));
             builder.command(command);
-            System.out.println(runDirectory);
-            System.out.println(command);
+            //System.out.println(runDirectory);
+            //System.out.println(command);
             Process proc = builder.start();
             errorGobbler = new StreamGobbler(proc.getErrorStream(), "ERROR");
             outputGobbler = new StreamGobbler(proc.getInputStream(), "OUTPUT");

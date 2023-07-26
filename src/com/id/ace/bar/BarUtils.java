@@ -20,10 +20,7 @@ public class BarUtils {
         String aceServerDir = System.getenv("PROSPECTIVE_MQSI_FILEPATH") + "\\";
         Pattern p = Pattern.compile("\\s+(.*)\\s*=\\s*(.*)");
 
-        //String[] command = {"cmd.exe", "/c", aceServerDir + "bin\\mqsireadbar.bat", "-b", barName, "-r"};
         String[] command = {"-b", barName, "-r"};
-        System.out.println(Arrays.toString(command));
-
         Command comm = new Command();
         int returnVal = comm.Exec(aceServerDir + "bin\\mqsireadbar.bat", command);
         if(returnVal < 0) {
@@ -31,18 +28,12 @@ public class BarUtils {
         }
 
         ArrayList<String> output = comm.getOutput();
-
-        System.out.println(output.toString());
-        System.err.println(comm.getError().toString());
-
-
-        //Process process = Runtime.getRuntime().exec(command);
-        //BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        String errorText = comm.getError().toString();
+         if (!errorText.equals("[]")) System.err.println(errorText);
         output.forEach(line -> {
             Matcher m = p.matcher(line);
             if (m.matches()) {
                 data.put(m.group(1), m.group(2));
-                //System.out.println(m.group(1) + " <> " + m.group(2));
             }
         });
 

@@ -1,7 +1,17 @@
 <component name="libraryTable">
   <library name="handleBar">
-    <CLASSES />
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../../../../../../Program Files/IBM/MQ/java/lib" />
+    </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <NATIVE>
+      <root url="file://$PROJECT_DIR$/../../../../../../Program Files/IBM/MQ/java/lib" />
+      <root url="file://$PROJECT_DIR$/../../../../../../Program Files/IBM/MQ/java/lib64" />
+    </NATIVE>
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../../../../../../Program Files/IBM/MQ/java/lib" />
+    </SOURCES>
+    <jarDirectory url="file://$PROJECT_DIR$/../../../../../../Program Files/IBM/MQ/java/lib" recursive="false" />
+    <jarDirectory url="file://$PROJECT_DIR$/../../../../../../Program Files/IBM/MQ/java/lib" recursive="false" type="SOURCES" />
   </library>
 </component>

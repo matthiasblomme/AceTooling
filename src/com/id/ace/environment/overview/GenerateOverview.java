@@ -46,6 +46,8 @@ public class GenerateOverview {
                 AceApplication aceApp = aceIs.getChildren().get(app);
                 for(String flow: aceApp.getChildren().keySet()){
                     System.out.println("        "  + flow + " > " + aceApp.getChildren().get(flow).getState());
+                    AceMessageflow msgFlow = aceApp.getFlow(flow);
+                    msgFlow.getInputQueues();
                 }
             }
         }

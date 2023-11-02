@@ -30,6 +30,10 @@ public class AceApplication {
         return children;
     }
 
+    public AceMessageflow getFlow(String flowName){
+        return children.get(flowName);
+    }
+
     public void setChildren(HashMap children) {
         this.children = children;
     }

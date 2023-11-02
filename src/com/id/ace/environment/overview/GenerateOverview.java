@@ -26,7 +26,7 @@ public class GenerateOverview {
         AceEnvironment aceEnv = new AceEnvironment();
         aceEnv.buildenvironmentView(nodeName, basePath);
 
-        printFlows(aceEnv);
+        printFlowsCsv(aceEnv);
 
     }
     private static void printMQ(MqEnvironment mqEnv){
@@ -47,9 +47,31 @@ public class GenerateOverview {
                 for(String flow: aceApp.getChildren().keySet()){
                     System.out.println("        "  + flow + " > " + aceApp.getChildren().get(flow).getState());
                     AceMessageflow msgFlow = aceApp.getFlow(flow);
-                    msgFlow.getInputQueues();
+                    if(!msgFlow.getInputQueues().isEmpty()){
+
+                    }
                 }
             }
+        }
+    }
+
+    private static void printFlowsCsv(AceEnvironment aceEnv){
+        System.out.println("Integration Server, Application, Flow, state, mqinput, mqouput, ...");
+        for(String is: aceEnv.getIntegrationServers().keySet()){
+            StringBuilder printLine = new StringBuilder("is");
+            AceIntegrationServer aceIs = aceEnv.getIntegrationServers().get(is);
+            for(String app: aceIs.getChildren().keySet()){
+                printLine.append(",app");
+                AceApplication aceApp = aceIs.getChildren().get(app);
+                for(String flow: aceApp.getChildren().keySet()){
+                    printLine.append(",flow");
+                    printLine.append(",").append(aceApp.getChildren().get(flow).getState());
+                    AceMessageflow msgFlow = aceApp.getFlow(flow);
+                    printLine.append((msgFlow.getInputQueues().isEmpty()) ? "no" : "yes");
+                    printLine.append((msgFlow.getOutputQueues().isEmpty()) ? "no" : "yes");
+                }
+            }
+            System.out.println(printLine.toString());
         }
     }
 

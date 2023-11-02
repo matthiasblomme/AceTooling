@@ -69,6 +69,7 @@ public class GenerateOverview {
                     AceMessageflow msgFlow = aceApp.getFlow(flow);
                     printLine.append((msgFlow.getInputQueues().isEmpty()) ? "no" : "yes");
                     printLine.append((msgFlow.getOutputQueues().isEmpty()) ? "no" : "yes");
+                    //add more here
                 }
             }
             System.out.println(printLine.toString());
